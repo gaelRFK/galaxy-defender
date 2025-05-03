@@ -65,6 +65,51 @@ function isColliding(a, b) {
 let shootCooldown = 0;
 let enemySpawnTimer = 0;
 
+// Crear un contenedor de "Game Over" y reiniciar
+const gameOverContainer = document.createElement("div");
+gameOverContainer.style.position = "absolute";
+gameOverContainer.style.top = "50%";
+gameOverContainer.style.left = "50%";
+gameOverContainer.style.transform = "translate(-50%, -50%)";
+gameOverContainer.style.textAlign = "center";
+gameOverContainer.style.color = "white";
+gameOverContainer.style.fontSize = "30px";
+gameOverContainer.style.display = "none"; // Inicialmente oculto
+document.body.appendChild(gameOverContainer);
+
+const restartButton = document.createElement("button");
+restartButton.innerText = "Volver a jugar";
+restartButton.style.padding = "10px 20px";
+restartButton.style.fontSize = "18px";
+restartButton.style.backgroundColor = "#28a745";
+restartButton.style.color = "white";
+restartButton.style.border = "none";
+restartButton.style.borderRadius = "5px";
+restartButton.style.cursor = "pointer";
+gameOverContainer.appendChild(restartButton);
+
+restartButton.addEventListener("click", restartGame);
+
+function showGameOver() {
+    gameOverContainer.style.display = "block"; // Mostrar el contenedor de Game Over
+    gameOverContainer.innerHTML = `<h2>¡Perdiste!</h2><p>Puntaje final: ${score}</p>`;
+}
+
+function restartGame() {
+    // Reiniciar las variables del juego
+    player.x = canvas.width / 2 - 25;
+    player.y = canvas.height - 60;
+    bullets = [];
+    enemies = [];
+    score = 0;
+    shootCooldown = 0;
+    enemySpawnTimer = 0;
+    keys = {};
+
+    gameOverContainer.style.display = "none"; // Ocultar el contenedor de Game Over
+    gameLoop(); // Reiniciar el bucle del juego
+}
+
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -98,8 +143,8 @@ function gameLoop() {
 
         // Colisión con jugador
         if (isColliding(player, e)) {
-            alert("¡Perdiste! Puntaje: " + score);
-            document.location.reload();
+            showGameOver(); // Mostrar el mensaje de Game Over
+            return; // Detener el juego
         }
 
         // Colisión con balas
